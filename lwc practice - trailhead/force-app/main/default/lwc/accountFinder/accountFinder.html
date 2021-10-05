@@ -1,0 +1,38 @@
+<!-- This component allows users to enter a value and then click the button to reset it -->
+<template>
+    <!-- Lightning is used for keeping style consistent with Salesforce -->
+    <lightning-card>
+
+        <!-- Tag that we use to give the user a field to enter in,
+        Type is the data type, 
+        Label appears above the field, 
+        Formatter formats values to either currency or percentage 
+        Value is the variable taken from the JavaScript
+        Onchange is tied into the JavaScript function-->
+        <lightning-input
+            type="number"
+            label="Annual Revenue"
+            formatter="currency"
+            value={annualRevenue}
+            onchange={handleChange}>
+        </lightning-input>
+
+        <!-- How we add a button to HTML, 
+            Label is the name and Onclick is tied to a JavaScript function -->
+        <lightning-button
+            label="Reset"
+            onclick={reset}>
+        </lightning-button>
+
+        <!-- This conditionally rends if there is data from the Accounts list -->
+        <template if:true={accounts.data}>
+
+            <!-- Looping through each Account in the list and displaying its Name -->
+            <template for:each={accounts.data} for:item="account">
+                 <p key={account.Id}>{account.Name}</p>
+            </template>
+            
+        </template> 
+        
+    </lightning-card>
+</template>
