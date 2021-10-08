@@ -1,0 +1,11 @@
+<template>
+    <lightning-card>
+        <!-- Simplified record create form, we add the object we are working with,
+        its fields and the onsuccess tied to our JavaScript function -->
+        <lightning-record-form
+            object-api-name={objectApiName}
+            fields={fields}
+            onsuccess={handleSuccess}>
+        </lightning-record-form>
+    </lightning-card>
+</template>
