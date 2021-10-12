@@ -1,0 +1,22 @@
+<template>
+    <lightning-card>
+        <!-- Rendering if the accounts.data is true -->
+        <template if:true={accounts.data}>
+            <!-- lightning datatable is used to provide an appealing list of records 
+                with inline editing; 
+                setting key field to the Id of the record, 
+                data is what the accounts.data variable provides, columns will equal 
+                what we define in our JS -->
+            <lightning-datatable
+                key-field="Id"
+                data={accounts.data}
+                columns={columns}
+            >
+           </lightning-datatable>
+        </template>
+        <!-- Renders instead if errors are present -->
+        <template if:true={errors}>
+            <p>{errors}</p>
+        </template>
+    </lightning-card>
+</template>
