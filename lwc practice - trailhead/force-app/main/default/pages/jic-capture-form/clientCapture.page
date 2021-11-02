@@ -1,0 +1,96 @@
+<!-- ?id=0015f000007v8vwAAA -->
+<apex:page standardController="Account" extensions="clientCaptureResultsController" docType="html-5.0">
+
+    <!-- 
+    Currently this page takes some of the fields from the searched account from previous page
+    The input fields will insert a new Person Account, relies on Trigger to merge with existing Person Account
+    File uploads are done directly to the Person Account, doesn't require trigger
+    -->
+    <apex:form>
+        <apex:pageBlock title="Person Account Details" mode="edit">
+
+            <!-- Adds the button on the top and bottom of the page -->
+            <apex:pageBlockButtons>
+                
+                <!-- Inserts the record and redirects to the clientCaptureConfirmationPage -->
+                <apex:commandButton value="Submit" action="{!insertAccounts}" />
+                
+            </apex:pageBlockButtons>
+
+            <!-- Shows the bare minimum fields already collected from Client -->
+            <apex:pageBlockSection title="On File">
+                
+                <apex:outputField label="Primary Email" value="{!accs[0].Client_1_Email__c}"/>
+                
+            </apex:pageBlockSection>
+
+            <!-- Holds the Primary Account Holder's information to enter -->
+            <apex:pageBlockSection title="Primary Account Details">
+                
+                <apex:inputField value="{!account.Name}" />
+                <apex:inputField label="First Name" value="{!account.Client_1_First_Name__c}" />
+                <!-- We need to put middle initial field here. Didn't make one for the playground yet -->
+                <apex:inputField label="Last Name" value="{!account.Client_1_Last_Name__c}" />
+                <apex:inputField label="DOB" value="{!account.Client_1_DOB__c}" />
+                <apex:inputField label="SSN" value="{!account.Client_1_SSN__c}" />
+                <apex:inputField label="Home Phone" value="{!account.Client_1_Home_Phone__c}" />
+                <apex:inputField label="Cell Phone" value="{!account.Client_1_Cell_Phone__c}" />
+                <apex:inputField required="true" label="Confirm Email" value="{!account.Client_1_Email__c}" />
+                <apex:inputField label="Employment Status" value="{!account.Client_1_Employment_Status__c}" />
+                <apex:inputField label="Company Name" value="{!account.Client_1_Company_Name__c}" />
+                <apex:inputField label="Location" value="{!account.Client_1_Location__c}" />
+                
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Address Information">
+
+                <apex:inputField value="{!account.Primary_Street__c}" />
+                <apex:inputField label="Secondary Street" value="{!account.Other_Street__c}" />
+                <apex:inputField value="{!account.Primary_City__c}" />
+                <apex:inputField label="Secondary City" value="{!account.Other_City__c}" />
+                <apex:inputField value="{!account.Primary_State__c}" />
+                <apex:inputField label="Secondary State" value="{!account.Other_State__c}" />
+                <apex:inputField value="{!account.Primary_Zip__c}" />
+                <apex:inputField label="Secondary Zip" value="{!account.Other_Zip__c}" />
+                <apex:inputField value="{!account.Primary_Country__c}" />
+                <apex:inputField label="Secondary Country" value="{!account.Other_Country__c}" />
+                
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Spouse Details">
+                
+                <apex:inputField label="First Name" value="{!account.Client_2_First_Name__c}" />
+                <!-- needs middle name field -->
+                <apex:inputField label="Last Name" value="{!account.Client_2_Last_Name__c}" />
+                <!-- possibly maiden name field? -->
+                <apex:inputField label="DOB" value="{!account.Client_2_DOB__c}" />
+                <apex:inputField label="SSN" value="{!account.Client_2_SSN__c}" />
+                <apex:inputField label="Home Phone" value="{!account.Client_2_Home_Phone__c}" />
+                <apex:inputField label="Cell Phone" value="{!account.Client_2_Cell_Phone__c}" />
+                <apex:inputField label="Email" value="{!account.Client_2_Email__c}" />
+                <apex:inputField label="Employment Status" value="{!account.Client_2_Employment_Status__c}" />
+                <apex:inputField label="Company Name" value="{!account.Client_2_Company_Name__c}" />
+                <apex:inputField label="Location" value="{!account.Client_2_Location__c}" />
+
+            </apex:pageBlockSection>
+
+            <!-- Waiting on approval from Client on whether we want this section or not
+            <apex:pageBlockSection title="Children">  
+            </apex:pageBlockSection>
+            -->
+
+            <!-- File Upload where it stores files onto the existing Person Account -->   
+            <apex:pageBlock title="Would you like to add any attachments to your Account?">
+                <apex:pageBlockSection columns="1">
+                    <!-- Fills in the fields for the Attachment object -->
+                    <apex:inputfile value="{!myfile.body}" filename="{!myfile.Name}" />
+                    <!-- Gives feedback that the user uploaded a file -->
+                    <apex:outputtext value="Files uploaded: {!filesUploaded}"/>
+                    <!-- Uploads the attachment to the Person Account -->
+                    <apex:commandButton value="Upload" action="{!Savedoc}"/>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+           
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

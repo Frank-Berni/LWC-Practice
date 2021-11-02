@@ -1,0 +1,40 @@
+<!--
+    Pg 1 of Client Capture Page
+	Search for Person Accounts with Client 1's Email and edit these via a separate page
+ -->
+ <apex:page controller="clientCaptureController">
+    <apex:form >
+     
+      <!-- search criteria -->
+      <apex:pageBlock title = "Please Enter Your Email">
+        <apex:pageBlockSection >
+          <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Email"/>
+            <apex:inputText value="{!email}"/>
+          </apex:pageBlockSectionItem>
+          <apex:commandButton value="Search" action="{!executeSearch}" />
+        </apex:pageBlockSection>
+      </apex:pageBlock>
+       
+      <!-- results block - conditionally rendered if a 
+           search has been executed
+        -->
+      <apex:pageBlock title = "Results" rendered= "{!searched}">
+        <apex:pageBlockTable value = "{!accounts}" var = "account">
+          <apex:column headerValue = "Person Account" value = "{!account.Name}" />
+          <apex:column headerValue = "Household Account" value = "{!account.Parent.Name}" />
+          <apex:column headerValue = "Email" value = "{!account.Client_1_Email__c}" />
+        </apex:pageBlockTable>
+        
+        <!-- button to allow the accounts to be edited -->
+        <apex:commandButton value ="Edit" action="{!edit}" />
+      </apex:pageBlock>
+
+      <apex:pageBlock title = "Results" rendered= "{!noMatch}">
+        <div>
+            We're sorry the email you searched doesn't match our records. Please try again.
+        </div>
+      </apex:pageBlock>
+      
+    </apex:form>
+  </apex:page>
