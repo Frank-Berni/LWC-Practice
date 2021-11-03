@@ -1,0 +1,40 @@
+You can troubleshoot JavaScript on client side using the dev tools in Chrome
+
+In the Org make sure to enable Debug Mode in Setup for yourself or any user who is debugging
+
+Right click inspect to pull of the console
+
+Elements houses your HTML
+Console where you enter your JavaScript
+Sources is where you can find all of the libraries, components and LWC modules 
+Settings is where you can set preferences, workspace, and ignore list for example
+
+Under Preferences checked Enable Custom Formatters 
+(Allows us to have data provision by decorators in readable parts and see the real value of the data)
+	
+Under Ignore List we added: (Allows us to pause on your own exceptions)
+/aura_prod.*.js$
+/components/.*.js$
+
+Under Sources we can create Breakpoints and add to Watch list
+
+Breakpoints can be conditional or not depending on how you want to set them, 
+they pause the execution of the code as many times as breakpoints we have
+Left clicking on the number of a line of code creates a blue breakpoint that pauses no matter what
+Right clicking on the number and clicking on condtional breakpoint allows you to enter in a conditional expression and tuns the breakpoint orange with a ?
+
+At the top of the right most pane, there will be several arrow buttons that allow you to skip, resume, and stop breakpoints at your choosing
+
+Values placed in Watch list keep an eye out for the value of variables whenever the lines of code are ran
+Way more convenient than simply having console.logs everywhere
+Click + to add an item to Watch and then type in the value 
+Popular functions used were typeof. , this. 
+
+Simple workflow is pick an area of the HTML page that relies on a certain event (click, hovermouse, etc.)
+Set your breakpoints whtin events centered around that event
+Set your variables in the watch list based on the those in your breakpoints
+Start interacting with the events and use the play buttons for breakpoints to see if those variables are behaving like they should
+You can then use the Console to temporarily try various JavaScript methods to fix the code
+Once you have a solution, permanently modify the JavaScript in your LWC component and everytihing should work
+
+Notes taken from Lightning Web Component Troubleshooting
