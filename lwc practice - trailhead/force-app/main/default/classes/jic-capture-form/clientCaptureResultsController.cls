@@ -14,9 +14,19 @@ public class clientCaptureResultsController {
 		return filesUploaded;
 	}
 
+	// Custom Validation rule to prevent mistyped Emails
+	public String message = 'Emails do not match';
+	public String getMessage() {
+		return message;
+	}
+	public Boolean misMatchEmail {get; set;}
+
     // Constructor - extracts account* parameters from the URL and
 	// Retrieves the associated Person Account record
     public clientCaptureResultsController(ApexPages.StandardController stdController) {
+
+		// Setting the custom validation rule message as false initially
+		misMatchEmail = false;
 
 		// Grabs the new Account being created from the page
 		this.acct = (Account)stdController.getRecord();
@@ -83,11 +93,16 @@ public class clientCaptureResultsController {
 	// Also redirects to another page that thanks the user for submitting their information
 	public PageReference insertAccounts() {
 
-		PageReference pr = Page.clientCaptureConfirmation;
+		if (acct.Client_1_Email__c == accs[0].Client_1_Email__c) {
+			misMatchEmail = false;
+			PageReference pr = Page.clientCaptureConfirmation;
+			insert acct;
+			return pr;
+		} else {
+			misMatchEmail = true;
+			return null;
+		}
 		
-		insert acct;
-		
-	 	return pr;
 
 	}
 }

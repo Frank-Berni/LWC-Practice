@@ -7,27 +7,33 @@
     File uploads are done directly to the Person Account, doesn't require trigger
     -->
     <apex:form>
+        <!-- Styling purposes -->
+        <!-- <style>
+            #employSpouse {
+                text-indent: 215px;
+            }
+        </style> -->
+
+        <!-- First section pertaining to Primary Account Holder -->
         <apex:pageBlock title="Person Account Details" mode="edit">
 
-            <!-- Adds the button on the top and bottom of the page -->
-            <apex:pageBlockButtons>
-                
-                <!-- Inserts the record and redirects to the clientCaptureConfirmationPage -->
-                <apex:commandButton value="Submit" action="{!insertAccounts}" />
-                
-            </apex:pageBlockButtons>
-
-            <!-- Shows the bare minimum fields already collected from Client -->
+            <!-- TODO : Add some padding and aligment here
+                Inserts the record and redirects to the clientCaptureConfirmationPage -->
+            <apex:commandButton value="Submit" action="{!insertAccounts}" />
+            
+            <!-- Holds Information from Existing Account and Displays Validation Rules -->
             <apex:pageBlockSection title="On File">
-                
+                 <!-- Shows the Email on file collected from Client -->
                 <apex:outputField label="Primary Email" value="{!accs[0].Client_1_Email__c}"/>
-                
+                <!-- Renders when Both Emails don't match -->
+                <apex:outputtext style="color:red" value="Emails do not match" rendered="{!misMatchEmail}"/>
             </apex:pageBlockSection>
 
-            <!-- Holds the Primary Account Holder's information to enter -->
+            <!-- Where the Primary Account Holder can enter their information  -->
             <apex:pageBlockSection title="Primary Account Details">
-                
                 <apex:inputField value="{!account.Name}" />
+                <!-- Email field is required to allow the trigger on the back end to update the existing account -->
+                <apex:inputField required="true" label="Confirm Email" value="{!account.Client_1_Email__c}" />
                 <apex:inputField label="First Name" value="{!account.Client_1_First_Name__c}" />
                 <!-- We need to put middle initial field here. Didn't make one for the playground yet -->
                 <apex:inputField label="Last Name" value="{!account.Client_1_Last_Name__c}" />
@@ -35,15 +41,48 @@
                 <apex:inputField label="SSN" value="{!account.Client_1_SSN__c}" />
                 <apex:inputField label="Home Phone" value="{!account.Client_1_Home_Phone__c}" />
                 <apex:inputField label="Cell Phone" value="{!account.Client_1_Cell_Phone__c}" />
-                <apex:inputField required="true" label="Confirm Email" value="{!account.Client_1_Email__c}" />
-                <apex:inputField label="Employment Status" value="{!account.Client_1_Employment_Status__c}" />
-                <apex:inputField label="Company Name" value="{!account.Client_1_Company_Name__c}" />
-                <apex:inputField label="Location" value="{!account.Client_1_Location__c}" />
-                
             </apex:pageBlockSection>
 
-            <apex:pageBlockSection title="Address Information">
+        </apex:pageBlock>
 
+        <!-- Employment Section for Primary Account Holder -->
+        <apex:pageBlock id="employmentP">
+
+            <!-- keeps the styling matched with the input fields -->
+            <div style="text-indent: 215px;">
+                <!-- The class I got from inspecting the VF page. Keeps the labeling consistent -->
+                <p class="labelCol vfLabelColTextWrap " style="float: left">
+                    Employment Status &nbsp; &nbsp;
+                </p>
+                <!-- This controls the Employer Questions to render based on value of picklist -->
+                <apex:actionRegion>
+                    <br/>
+                    <apex:inputField label="Employment Status" value="{!account.Client_1_Employment_Status__c}">
+                        <apex:actionSupport event="onchange" reRender="employmentP" status="refresh1">
+                            <apex:actionStatus id="refresh1">
+                                <apex:facet name="start"/>
+                                <apex:facet name="stop"/>
+                            </apex:actionStatus>
+                        </apex:actionSupport>
+                    </apex:inputField>
+                </apex:actionRegion>
+            </div>
+            <!-- Renders when Employed is selected in the picklist -->
+            <apex:pageBlockSection rendered="{!account.Client_1_Employment_Status__c == 'Employed'}" >
+                <!-- Further questions about Employment  -->
+                <div>
+                    <apex:outputtext />
+                    <apex:inputField label="Company Name" value="{!account.Client_1_Company_Name__c}" />
+                    <apex:inputField label="Location" value="{!account.Client_1_Location__c}" />
+                </div>
+            </apex:pageBlockSection>
+
+        </apex:pageBlock>
+
+        <!-- Address Information Section -->
+        <apex:pageBlock title="Address Information">
+
+            <apex:pageBlockSection >
                 <apex:inputField value="{!account.Primary_Street__c}" />
                 <apex:inputField label="Secondary Street" value="{!account.Other_Street__c}" />
                 <apex:inputField value="{!account.Primary_City__c}" />
@@ -54,43 +93,94 @@
                 <apex:inputField label="Secondary Zip" value="{!account.Other_Zip__c}" />
                 <apex:inputField value="{!account.Primary_Country__c}" />
                 <apex:inputField label="Secondary Country" value="{!account.Other_Country__c}" />
-                
             </apex:pageBlockSection>
 
-            <apex:pageBlockSection title="Spouse Details">
-                
-                <apex:inputField label="First Name" value="{!account.Client_2_First_Name__c}" />
-                <!-- needs middle name field -->
-                <apex:inputField label="Last Name" value="{!account.Client_2_Last_Name__c}" />
-                <!-- possibly maiden name field? -->
-                <apex:inputField label="DOB" value="{!account.Client_2_DOB__c}" />
-                <apex:inputField label="SSN" value="{!account.Client_2_SSN__c}" />
-                <apex:inputField label="Home Phone" value="{!account.Client_2_Home_Phone__c}" />
-                <apex:inputField label="Cell Phone" value="{!account.Client_2_Cell_Phone__c}" />
-                <apex:inputField label="Email" value="{!account.Client_2_Email__c}" />
-                <apex:inputField label="Employment Status" value="{!account.Client_2_Employment_Status__c}" />
-                <apex:inputField label="Company Name" value="{!account.Client_2_Company_Name__c}" />
-                <apex:inputField label="Location" value="{!account.Client_2_Location__c}" />
-
-            </apex:pageBlockSection>
-
-            <!-- Waiting on approval from Client on whether we want this section or not
-            <apex:pageBlockSection title="Children">  
-            </apex:pageBlockSection>
-            -->
-
-            <!-- File Upload where it stores files onto the existing Person Account -->   
-            <apex:pageBlock title="Would you like to add any attachments to your Account?">
-                <apex:pageBlockSection columns="1">
-                    <!-- Fills in the fields for the Attachment object -->
-                    <apex:inputfile value="{!myfile.body}" filename="{!myfile.Name}" />
-                    <!-- Gives feedback that the user uploaded a file -->
-                    <apex:outputtext value="Files uploaded: {!filesUploaded}"/>
-                    <!-- Uploads the attachment to the Person Account -->
-                    <apex:commandButton value="Upload" action="{!Savedoc}"/>
-                </apex:pageBlockSection>
-            </apex:pageBlock>
-           
         </apex:pageBlock>
+
+        <apex:pageBlock id="spouseSection">
+            
+            <!-- keeps the styling matched with the input fields -->
+            <div style="text-indent: 255px;">
+                <!-- The class I got from inspecting the VF page. Keeps the labeling consistent -->
+                <p class="labelCol vfLabelColTextWrap " style="float: left">
+                    Marital Status &nbsp; &nbsp;
+                </p>
+                <!-- This controls the Spouse Section to render based on value of picklist -->
+                <apex:actionRegion>
+                    <br/>
+                    <apex:inputField label="Marital Status" value="{!account.Client_1_Marital_Status__c}">
+                        <apex:actionSupport event="onchange" reRender="spouseSection" status="refreshStatus">
+                            <apex:actionStatus id="refreshStatus">
+                                <apex:facet name="start"/>
+                                <apex:facet name="stop"/>
+                            </apex:actionStatus>
+                        </apex:actionSupport>
+                    </apex:inputField>
+                </apex:actionRegion>
+            </div>
+
+            <!-- Renders when Married is selected in the picklist -->
+            <apex:pageBlockSection rendered="{!account.Client_1_Marital_Status__c == 'Married'}" >
+                <br/>
+                <!-- Workaround to weird color issue when blockSection rerenders. Font Color turns white for some reason -->
+                <div style="text-indent: 255px; font-size: 15px;" >
+                    <h1>
+                        Spouse Details
+                    </h1>
+                </div>
+                <br/>
+                <div>
+                    <apex:outputText /> <!-- blank output text field to align the input fields properly-->
+                    <apex:inputField label="First Name" value="{!account.Client_2_First_Name__c}" />
+                    <!-- needs middle name field -->
+                    <apex:inputField label="Last Name" value="{!account.Client_2_Last_Name__c}" />
+                    <!-- possibly maiden name field? -->
+                    <apex:inputField label="DOB" value="{!account.Client_2_DOB__c}" />
+                    <apex:inputField label="SSN" value="{!account.Client_2_SSN__c}" />
+                    <apex:inputField label="Home Phone" value="{!account.Client_2_Home_Phone__c}" />
+                    <apex:inputField label="Cell Phone" value="{!account.Client_2_Cell_Phone__c}" />
+                    <apex:inputField label="Email" value="{!account.Client_2_Email__c}" />
+                    <apex:outputText />
+                    <!-- The class I got from inspecting the VF page. Keeps the labeling consistent -->
+                    <p class="labelCol vfLabelColTextWrap " style="text-indent: 215px;">
+                        Employment&nbsp;Status
+                    </p>
+                </div>
+                
+                <!-- Running into a weird formatting issue where the picklist stays stuck in one position and doesn't accept 
+                any styling -->
+                <!-- This controls the Employer Questions to render based on value of picklist -->
+                    <apex:actionRegion id="employSpouse">
+                        <apex:inputField label="Employment Status" value="{!account.Client_2_Employment_Status__c}">
+                            <apex:actionSupport event="onchange" reRender="spouseSection" status="refresh3">
+                                <apex:actionStatus id="refresh3">
+                                    <apex:facet name="start"/>
+                                    <apex:facet name="stop"/>
+                                </apex:actionStatus>
+                            </apex:actionSupport>
+                        </apex:inputField>
+                    </apex:actionRegion>
+                
+                <!-- These two fields render when Employed is selected in picklist  -->
+                <apex:inputField label="Company Name" rendered="{!account.Client_2_Employment_Status__c == 'Employed'}" value="{!account.Client_2_Company_Name__c}" />
+                <apex:inputField label="Location" rendered="{!account.Client_2_Employment_Status__c == 'Employed'}" value="{!account.Client_2_Location__c}" />   
+               
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+
+        <!-- File Upload where it stores files onto the existing Person Account -->   
+        <apex:pageBlock title="Would you like to add any attachments to your Account?">
+
+            <apex:pageBlockSection columns="1">
+                <!-- Fills in the fields for the Attachment object -->
+                <apex:inputfile value="{!myfile.body}" filename="{!myfile.Name}" />
+                <!-- Gives feedback that the user uploaded a file -->
+                <apex:outputtext value="Files uploaded: {!filesUploaded}"/>
+                <!-- Uploads the attachment to the Person Account -->
+                <apex:commandButton value="Upload" action="{!Savedoc}"/>
+            </apex:pageBlockSection>
+
+        </apex:pageBlock>
+
     </apex:form>
 </apex:page>
