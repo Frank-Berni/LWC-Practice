@@ -1,4 +1,3 @@
-<!-- ?id=0015f000007v8vwAAA -->
 <apex:page standardController="Account" extensions="clientCaptureResultsController" docType="html-5.0">
 
     <!-- 
@@ -14,13 +13,14 @@
             }
         </style> -->
 
-        <!-- First section pertaining to Primary Account Holder -->
+        <!-- Primary Account Details Section-->
         <apex:pageBlock title="Person Account Details" mode="edit">
 
-            <!-- TODO : Add some padding and aligment here
-                Inserts the record and redirects to the clientCaptureConfirmationPage -->
-            <apex:commandButton value="Submit" action="{!insertAccounts}" />
-            
+            <!-- Submit Button that inserts the Account -->
+            <div style="padding: 10px; text-align: center;" >   
+                <apex:commandButton value="Submit" action="{!insertAccounts}" />
+            </div> 
+
             <!-- Holds Information from Existing Account and Displays Validation Rules -->
             <apex:pageBlockSection title="On File">
                  <!-- Shows the Email on file collected from Client -->
@@ -44,6 +44,7 @@
             </apex:pageBlockSection>
 
         </apex:pageBlock>
+        <!-- End Primary Account Details Section-->
 
         <!-- Employment Section for Primary Account Holder -->
         <apex:pageBlock id="employmentP">
@@ -73,11 +74,12 @@
                 <div>
                     <apex:outputtext />
                     <apex:inputField label="Company Name" value="{!account.Client_1_Company_Name__c}" />
-                    <apex:inputField label="Location" value="{!account.Client_1_Location__c}" />
+                    <apex:inputField label="Company Location" value="{!account.Client_1_Location__c}" />
                 </div>
             </apex:pageBlockSection>
 
         </apex:pageBlock>
+        <!-- End Employment Section for Primary Account Holder -->
 
         <!-- Address Information Section -->
         <apex:pageBlock title="Address Information">
@@ -96,7 +98,9 @@
             </apex:pageBlockSection>
 
         </apex:pageBlock>
+        <!-- End Address Information Section -->
 
+        <!-- Spouse Information Section -->
         <apex:pageBlock id="spouseSection">
             
             <!-- keeps the styling matched with the input fields -->
@@ -107,7 +111,7 @@
                 </p>
                 <!-- This controls the Spouse Section to render based on value of picklist -->
                 <apex:actionRegion>
-                    <br/>
+                    <br/> <!--The spacing I needed to get it lined up! -->
                     <apex:inputField label="Marital Status" value="{!account.Client_1_Marital_Status__c}">
                         <apex:actionSupport event="onchange" reRender="spouseSection" status="refreshStatus">
                             <apex:actionStatus id="refreshStatus">
@@ -118,6 +122,30 @@
                     </apex:inputField>
                 </apex:actionRegion>
             </div>
+
+                
+            <!-- Running into a weird formatting issue where the picklist stays stuck in one position and doesn't accept 
+            any styling -->
+            <!-- This controls the Employer Questions to render based on value of picklist -->
+            <div style="text-indent: 255px;">
+                <!-- The class I got from inspecting the VF page. Keeps the labeling consistent -->
+                <p class="labelCol vfLabelColTextWrap " style="float: left">
+                    <apex:outputText value="What is your Spouse's Employment Status?" rendered="{!account.Client_1_Marital_Status__c == 'Married'}" />  
+                    <!-- &nbsp; &nbsp; -->
+                </p>
+            </div>
+            <br/>
+            <apex:actionRegion rendered="{!account.Client_1_Marital_Status__c == 'Married'}" id="employSpouse">
+                <apex:inputField label="Employment Status" value="{!account.Client_2_Employment_Status__c}">
+                    <apex:actionSupport event="onchange" reRender="spouseSection" status="refresh3">
+                        <apex:actionStatus id="refresh3">
+                            <apex:facet name="start"/>
+                            <apex:facet name="stop"/>
+                        </apex:actionStatus>
+                    </apex:actionSupport>
+                </apex:inputField>
+            </apex:actionRegion>
+            
 
             <!-- Renders when Married is selected in the picklist -->
             <apex:pageBlockSection rendered="{!account.Client_1_Marital_Status__c == 'Married'}" >
@@ -141,32 +169,22 @@
                     <apex:inputField label="Cell Phone" value="{!account.Client_2_Cell_Phone__c}" />
                     <apex:inputField label="Email" value="{!account.Client_2_Email__c}" />
                     <apex:outputText />
-                    <!-- The class I got from inspecting the VF page. Keeps the labeling consistent -->
+                    <!-- The class I got from inspecting the VF page. Keeps the labeling consistent
                     <p class="labelCol vfLabelColTextWrap " style="text-indent: 215px;">
                         Employment&nbsp;Status
-                    </p>
-                </div>
-                
-                <!-- Running into a weird formatting issue where the picklist stays stuck in one position and doesn't accept 
-                any styling -->
-                <!-- This controls the Employer Questions to render based on value of picklist -->
-                    <apex:actionRegion id="employSpouse">
-                        <apex:inputField label="Employment Status" value="{!account.Client_2_Employment_Status__c}">
-                            <apex:actionSupport event="onchange" reRender="spouseSection" status="refresh3">
-                                <apex:actionStatus id="refresh3">
-                                    <apex:facet name="start"/>
-                                    <apex:facet name="stop"/>
-                                </apex:actionStatus>
-                            </apex:actionSupport>
-                        </apex:inputField>
-                    </apex:actionRegion>
-                
-                <!-- These two fields render when Employed is selected in picklist  -->
-                <apex:inputField label="Company Name" rendered="{!account.Client_2_Employment_Status__c == 'Employed'}" value="{!account.Client_2_Company_Name__c}" />
-                <apex:inputField label="Location" rendered="{!account.Client_2_Employment_Status__c == 'Employed'}" value="{!account.Client_2_Location__c}" />   
-               
+                    </p> -->
+                </div>  
             </apex:pageBlockSection>
+
+                <!-- TODO : Wrap these input fields into their own pageBlockSection -->
+                <!-- These two fields render when Employed is selected in picklist  -->
+            <apex:pageBlockSection rendered="{!account.Client_2_Employment_Status__c == 'Employed'}">
+                <apex:inputField label="Company Name"  value="{!account.Client_2_Company_Name__c}" />
+                <apex:inputField label="Company Location" value="{!account.Client_2_Location__c}" />   
+            </apex:pageBlockSection>
+
         </apex:pageBlock>
+        <!-- End Spouse Information Section -->
 
         <!-- File Upload where it stores files onto the existing Person Account -->   
         <apex:pageBlock title="Would you like to add any attachments to your Account?">
@@ -181,6 +199,7 @@
             </apex:pageBlockSection>
 
         </apex:pageBlock>
+        <!-- End File Upload Section -->
 
     </apex:form>
 </apex:page>
